@@ -2,7 +2,7 @@
 import pandas as pd
 import numpy as np    #numpy
 import itertools
-#import sklearn
+
 df = pd.read_excel('BostonDataSet.xlsx', sheet_name=0, header=0)
 #df = pd.read_excel('winequality-red.xlsx', sheet_name=0, header=0)
 
@@ -32,129 +32,122 @@ head = df.columns[0:11] #11
 print('HEAD: ',head)
 #x = df.loc[:,["CRIM","ZN","INDUS","CHAS","NOX","RM","AGE","DIS","RAD","TAX","PTRATIO"]]
 
-#patterns = itertools.combinations(head, 4)
-patterns = itertools.permutations(head, 4)
-for pattern in patterns:
-    #print(pattern)
-    x = df.loc[:,pattern]
-    y = df.loc[:,'MEDV']
+patterns = itertools.combinations(head, 4)
+#patterns = itertools.permutations(head, 4)
 
-    #print(x)
-    #print(y)
-    #print(x.shape)
-    #print(y.shape)
+with open('output.txt','w') as f:
 
 
-    
-    """nm = np.array(pattern)
-    #nm1 = nm[0]
-    nm2 = nm[1]
-    nm3 = nm[2]
-    nm4 = nm[3]
 
-    print(nm1,nm2,nm3,nm4)
+     for pattern in patterns:
+          #print(pattern)
+          x = df.loc[:,pattern]
+          y = df.loc[:,'MEDV']
+
+          #print(x)
+          #print(y)
+          #print(x.shape)
+          #print(y.shape)
 
 
-    x1 = df.loc[:,nm1]
-    x2 = df.loc[:,nm2]
-    x3 = df.loc[:,nm3]
-    x4 = df.loc[:,nm4]"""
+          
 
-    #####################################################################標準化・正規化
-    #重回帰分析で、入力変数が複数になったことで正規化の必要性
-    #分散を用いて標準化
 
-    #numpyによる正規化　
-    #yがNaNになる
-    """x_np = x.apply(lambda x: (x - np.mean(x)) / np.std(x))
-    #y_np = y.apply(lambda y: (y - np.mean(y)) / np.std(y))    #yは一列しかないからapply関数はいらないのでは？これやるとNaNになる。
-    y_np = (y - np.mean(y)) / np.std(y)
+          #####################################################################標準化・正規化
+          #重回帰分析で、入力変数が複数になったことで正規化の必要性
+          #分散を用いて標準化
 
-    print(x_np.head())
-    print(y_np.head())
+          #numpyによる正規化　
+          #yがNaNになる
+          """x_np = x.apply(lambda x: (x - np.mean(x)) / np.std(x))
+          #y_np = y.apply(lambda y: (y - np.mean(y)) / np.std(y))    #yは一列しかないからapply関数はいらないのでは？これやるとNaNになる。
+          y_np = (y - np.mean(y)) / np.std(y)
 
-    #pandasによる正規化
-    xss_pd = (x - x.mean()) / x.std(ddof=0)
-    yss_pd = (y - y.mean()) / y.std(ddof=0)
+          print(x_np.head())
+          print(y_np.head())
 
-    print(xss_pd.head())
-    print(yss_pd.head())"""
+          #pandasによる正規化
+          xss_pd = (x - x.mean()) / x.std(ddof=0)
+          yss_pd = (y - y.mean()) / y.std(ddof=0)
 
-    #scikit-learnによる正規化
-    from sklearn import preprocessing
-    from sklearn.linear_model import LinearRegression
+          print(xss_pd.head())
+          print(yss_pd.head())"""
 
-    sscaler = preprocessing.StandardScaler()
-    #x_fit =np.array(x).reshape(-1,1) #これで変換しないとfitに入力できない
-    x_fit = x
-    y_fit = np.array(y).reshape(-1,1) #これで変換しないとfitに入力できない
+          #scikit-learnによる正規化
+          from sklearn import preprocessing
+          from sklearn.linear_model import LinearRegression
 
-    sscaler.fit(x_fit)
-    xss_sk = sscaler.transform(x_fit) 
-    sscaler.fit(y_fit)
-    yss_sk = sscaler.transform(y_fit)
+          sscaler = preprocessing.StandardScaler()
+          #x_fit =np.array(x).reshape(-1,1) #これで変換しないとfitに入力できない
+          x_fit = x
+          y_fit = np.array(y).reshape(-1,1) #これで変換しないとfitに入力できない
 
-    #print(xss_sk)
-    #print(yss_sk)
+          sscaler.fit(x_fit)
+          xss_sk = sscaler.transform(x_fit) 
+          sscaler.fit(y_fit)
+          yss_sk = sscaler.transform(y_fit)
 
-    #min-max正規化
-    mscaler = preprocessing.MinMaxScaler()
-    mscaler.fit(x_fit)
-    xms = mscaler.transform(x_fit)
-    mscaler.fit(y_fit)
-    yms = mscaler.transform(y_fit)
+          #print(xss_sk)
+          #print(yss_sk)
 
-    #print(xms)
-    #print(yms)
+          #min-max正規化
+          mscaler = preprocessing.MinMaxScaler()
+          mscaler.fit(x_fit)
+          xms = mscaler.transform(x_fit)
+          mscaler.fit(y_fit)
+          yms = mscaler.transform(y_fit)
 
-    #####################################################################重回帰分析
-    #標準化を使ったScikit-learn重回帰分析
-    model_lr_std = LinearRegression()
-    model_lr_std.fit(xss_sk, yss_sk)
+          #print(xms)
+          #print(yms)
 
-    """
-    print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
-    print(model_lr_std.coef_)
-    print(model_lr_std.intercept_)
-    print(model_lr_std.score(xss_sk, yss_sk))
+          #####################################################################重回帰分析
+          #標準化を使ったScikit-learn重回帰分析
+          model_lr_std = LinearRegression()
+          model_lr_std.fit(xss_sk, yss_sk)
 
-    model_lr_std.predict(xss_sk)
+          """
+          print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
+          print(model_lr_std.coef_)
+          print(model_lr_std.intercept_)
+          print(model_lr_std.score(xss_sk, yss_sk))
 
-    #min-max正規化 Scikit-learn重回帰分析
-    model_lr_norm = LinearRegression()
-    model_lr_norm.fit(xms, yms)
-    print('+++++++++++++++++++++++++++++++++++++++++++')
-    print(model_lr_norm.coef_)
-    print(model_lr_norm.intercept_)
-    print(model_lr_norm.score(xms, yms))
+          model_lr_std.predict(xss_sk)
 
-    #重回帰での偏回帰係数確認
-    from numpy import linalg as LA
-    print(LA.inv(xss_sk.T @ xss_sk) @ xss_sk.T @ yss_sk)
-    """
-    #決定係数R
-    ##Sall
-    s_all = ((yss_sk - yss_sk.mean())**2).sum()
-    #print(s_all)
-    ##Sreg
-    s_reg = ((model_lr_std.predict(xss_sk) - yss_sk.mean())**2).sum()
-    #print(s_reg)
-    ##Sres
-    s_res = ((yss_sk - model_lr_std.predict(xss_sk))**2).sum()
-    #print(s_res)
-    #print('Sall: %.3f' %s_all)
-    #print('Sreg + Sres: %.3f' %(s_reg + s_res))
+          #min-max正規化 Scikit-learn重回帰分析
+          model_lr_norm = LinearRegression()
+          model_lr_norm.fit(xms, yms)
+          print('+++++++++++++++++++++++++++++++++++++++++++')
+          print(model_lr_norm.coef_)
+          print(model_lr_norm.intercept_)
+          print(model_lr_norm.score(xms, yms))
 
-    #Rf
-    Rf = 1 - (s_res / (yss_sk.size - 4 - 1)) / (s_all / (yss_sk.size -1)) #4変数だから４
-    #print('Rf: %.3f' %Rf)
+          #重回帰での偏回帰係数確認
+          from numpy import linalg as LA
+          print(LA.inv(xss_sk.T @ xss_sk) @ xss_sk.T @ yss_sk)
+          """
+          #決定係数R
+          ##Sall
+          s_all = ((yss_sk - yss_sk.mean())**2).sum()
+          #print(s_all)
+          ##Sreg
+          s_reg = ((model_lr_std.predict(xss_sk) - yss_sk.mean())**2).sum()
+          #print(s_reg)
+          ##Sres
+          s_res = ((yss_sk - model_lr_std.predict(xss_sk))**2).sum()
+          #print(s_res)
+          #print('Sall: %.3f' %s_all)
+          #print('Sreg + Sres: %.3f' %(s_reg + s_res))
+
+          #Rf
+          Rf = 1 - (s_res / (yss_sk.size - 4 - 1)) / (s_all / (yss_sk.size -1)) #4変数だから４
+          #print('Rf: %.3f' %Rf)
    
 
-    #統計的判断
-    import statsmodels.api as sm
+          #統計的判断
+          import statsmodels.api as sm
 
-    x_add_const = sm.add_constant(xss_sk)
-    model_sm = sm.OLS(yss_sk, x_add_const).fit()
-    #print(model_sm.summary())
-
-    print(pattern,'AIC: %.1f' %model_sm.aic,'Rf: %.3f' %Rf)
+          x_add_const = sm.add_constant(xss_sk)
+          model_sm = sm.OLS(yss_sk, x_add_const).fit()
+          print(model_sm.summary())
+          print(model_sm.params,sep = '',end='',file = f) 
+          print(pattern,'AIC: %.1f' %model_sm.aic,'Rf: %.3f' %Rf,file = f)
