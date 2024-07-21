@@ -23,10 +23,8 @@ print(matrix)
 #print(df['CRIM'])
 """ データを列毎に取得　"""
 MEDV_d = df.loc[:,'MEDV']  #住宅価格
-#print(MEDV_d[0:])
-#print(df.loc[1,'CRIM'])
+
 CRIM_d = df.loc[:,'CRIM']   #列取得
-#print(CRIM_d[0])
 ZN_d = df.loc[:,'ZN'] 
 INDUS_d = df.loc[:,'INDUS']
 CHAS_d = df.loc[:,'CHAS']
@@ -42,11 +40,11 @@ PTRATIO_d = df.loc[:,'PTRATIO']
 import matplotlib.pyplot as plt     #グラフ化
 import seaborn as sns
 
-plt.plot(PTRATIO_d, MEDV_d, 'o')
+plt.plot(RM_d, MEDV_d, 'o')                           ####データ変更
 plt.show()
 
 import numpy as np    #numpyで分析
-np_x = PTRATIO_d.values
+np_x = RM_d.values                                     ####データ変更
 np_y = MEDV_d.values
 np_xy = np.stack([np_x, np_y])
 
@@ -67,7 +65,7 @@ y=np.array(np_y).reshape(-1,1)
 model_lr = LinearRegression()
 model_lr.fit(x, y)
 
-plt.plot(PTRATIO_d, MEDV_d, 'o')
+plt.plot(RM_d, MEDV_d, 'o')                             ####データ変更
 plt.plot(x, model_lr.predict(x), linestyle="solid")
 plt.show()
 
