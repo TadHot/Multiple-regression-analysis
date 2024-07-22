@@ -1,7 +1,13 @@
-#重回帰分析　
+#重回帰分析
+#https://qiita.com/karaage0703/items/f38d18afc1569fcc0418 参考サイト
+
 import pandas as pd
 import numpy as np    #numpy
 import itertools
+import sys
+import pprint
+import math
+
 
 df = pd.read_excel('BostonDataSet.xlsx', sheet_name=0, header=0)
 #df = pd.read_excel('winequality-red.xlsx', sheet_name=0, header=0)
@@ -27,20 +33,15 @@ print(df)
  """
 
 #データセット
-     #y=MEDV x1,x2,x=上のどれか
+#y=MEDV x1,x2,x=上のどれか
 head = df.columns[0:11] #11
 print('HEAD: ',head)
-#x = df.loc[:,["CRIM","ZN","INDUS","CHAS","NOX","RM","AGE","DIS","RAD","TAX","PTRATIO"]]
 
-patterns = itertools.combinations(head, 4)
-#patterns = itertools.permutations(head, 4)
+patterns = itertools.combinations(head, 4) #組合せ
+#patterns = itertools.permutations(head, 4) #順列
 
-with open('output.txt','w') as f:
-
-
-
+with open('output.txt','w') as f: #ファイルopen
      for pattern in patterns:
-          #print(pattern)
           x = df.loc[:,pattern]
           y = df.loc[:,'MEDV']
 
@@ -49,31 +50,29 @@ with open('output.txt','w') as f:
           #print(x.shape)
           #print(y.shape)
 
-
-          
-
-
           #####################################################################標準化・正規化
           #重回帰分析で、入力変数が複数になったことで正規化の必要性
           #分散を用いて標準化
 
-          #numpyによる正規化　
+          #numpyによる標準化　
           #yがNaNになる
-          """x_np = x.apply(lambda x: (x - np.mean(x)) / np.std(x))
+          """
+          x_np = x.apply(lambda x: (x - np.mean(x)) / np.std(x))
           #y_np = y.apply(lambda y: (y - np.mean(y)) / np.std(y))    #yは一列しかないからapply関数はいらないのでは？これやるとNaNになる。
           y_np = (y - np.mean(y)) / np.std(y)
 
           print(x_np.head())
           print(y_np.head())
 
-          #pandasによる正規化
+          #pandasによる標準化
           xss_pd = (x - x.mean()) / x.std(ddof=0)
           yss_pd = (y - y.mean()) / y.std(ddof=0)
 
           print(xss_pd.head())
-          print(yss_pd.head())"""
+          print(yss_pd.head())
+          """
 
-          #scikit-learnによる正規化
+          #scikit-learnによる標準化
           from sklearn import preprocessing
           from sklearn.linear_model import LinearRegression
 
@@ -106,7 +105,6 @@ with open('output.txt','w') as f:
           model_lr_std.fit(xss_sk, yss_sk)
 
           """
-          print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
           print(model_lr_std.coef_)
           print(model_lr_std.intercept_)
           print(model_lr_std.score(xss_sk, yss_sk))
@@ -116,7 +114,7 @@ with open('output.txt','w') as f:
           #min-max正規化 Scikit-learn重回帰分析
           model_lr_norm = LinearRegression()
           model_lr_norm.fit(xms, yms)
-          print('+++++++++++++++++++++++++++++++++++++++++++')
+
           print(model_lr_norm.coef_)
           print(model_lr_norm.intercept_)
           print(model_lr_norm.score(xms, yms))
@@ -145,9 +143,14 @@ with open('output.txt','w') as f:
 
           #統計的判断
           import statsmodels.api as sm
-
           x_add_const = sm.add_constant(xss_sk)
           model_sm = sm.OLS(yss_sk, x_add_const).fit()
           print(model_sm.summary())
-          print(model_sm.params,sep = '',end='',file = f) 
-          print(pattern,'AIC: %.1f' %model_sm.aic,'Rf: %.3f' %Rf,file = f)
+          #print(model_sm.params,sep = '',end='',file = f) 
+          
+          #ファイル出力
+          model_sm_int = np.array(model_sm.params)
+          np.set_printoptions(precision=4,suppress=True) #指数表記を整数表記に。小数点以下4桁
+          
+          print(pattern,'\tAIC: %.1f' %model_sm.aic,'\tRf: %.3f' %Rf,end="  ",file = f)
+          print("\tモデルパラメータ:{0}".format(model_sm_int),file = f) 

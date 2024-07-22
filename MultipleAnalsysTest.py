@@ -1,4 +1,6 @@
 #重回帰分析　WEBサイトのまね
+#https://qiita.com/karaage0703/items/f38d18afc1569fcc0418 参考サイト
+
 import pandas as pd
 import numpy as np    #numpy
 #import sklearn
