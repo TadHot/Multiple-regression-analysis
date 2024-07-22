@@ -1,4 +1,6 @@
 #単回帰分析　
+#https://qiita.com/karaage0703/items/701367b6c926552fe505  参考サイト
+
 import pandas as pd
 df = pd.read_excel('BostonDataSet.xlsx', sheet_name=0, header=0)
 #df = pd.read_excel('test_data.xlsx', sheet_name=0, header=0)
@@ -7,24 +9,32 @@ print(matrix)
 
 #CRIM   ZN  INDUS  CHAS   NOX      RM   AGE     DIS  RAD  TAX  PTRATIO  MEDV 
 """
- CRIM     per capita crime rate by town
- ZN       proportion of residential land zoned for lots over 25,000 sq.ft.
- INDUS    proportion of non-retail business acres per town
- CHAS     Charles River dummy variable (= 1 if tract bounds river; 0 otherwise)
- NOX      nitric oxides concentration (parts per 10 million)
- RM       average number of rooms per dwelling
- AGE      proportion of owner-occupied units built prior to 1940
- DIS      weighted distances to five Boston employment centres
- RAD      index of accessibility to radial highways
- TAX      full-value property-tax rate per $10,000
- PTRATIO  pupil-teacher ratio by town
- MEDV     Median value of owner-occupied homes in $1000's
+ 0 CRIM     per capita crime rate by town
+ 1 ZN       proportion of residential land zoned for lots over 25,000 sq.ft.
+ 2 INDUS    proportion of non-retail business acres per town
+ 3 CHAS     Charles River dummy variable (= 1 if tract bounds river; 0 otherwise)
+ 4 NOX      nitric oxides concentration (parts per 10 million)
+ 5 RM       average number of rooms per dwelling
+ 6 AGE      proportion of owner-occupied units built prior to 1940
+ 7 DIS      weighted distances to five Boston employment centres
+ 8 RAD      index of accessibility to radial highways
+ 9 TAX      full-value property-tax rate per $10,000
+ 10 PTRATIO  pupil-teacher ratio by town
+ 11 MEDV     Median value of owner-occupied homes in $1000's
  """
-#print(df['CRIM'])
+
+
+head = df.columns[0:11] #11
+print('HEAD: ',head)
+
+l1=int((input('Enter the first value: '))) #番号で入力
+pattern = head[l1]
+print(pattern)
+
 """ データを列毎に取得　"""
 MEDV_d = df.loc[:,'MEDV']  #住宅価格
-
-CRIM_d = df.loc[:,'CRIM']   #列取得
+x_d = df.loc[:,pattern]
+"""CRIM_d = df.loc[:,'CRIM']   #列取得
 ZN_d = df.loc[:,'ZN'] 
 INDUS_d = df.loc[:,'INDUS']
 CHAS_d = df.loc[:,'CHAS']
@@ -34,17 +44,17 @@ AGE_d = df.loc[:,'AGE']
 DIS_d = df.loc[:,'DIS']
 RAD_d = df.loc[:,'RAD']
 TAX_d = df.loc[:,'TAX']
-PTRATIO_d = df.loc[:,'PTRATIO']
+PTRATIO_d = df.loc[:,'PTRATIO']"""
 
 #先ずは単回帰分析　y=MEDV x=上のどれか
 import matplotlib.pyplot as plt     #グラフ化
 import seaborn as sns
 
-plt.plot(RM_d, MEDV_d, 'o')                           ####データ変更
+plt.plot(x_d, MEDV_d, 'o')                           ####データ変更
 plt.show()
 
 import numpy as np    #numpyで分析
-np_x = RM_d.values                                     ####データ変更
+np_x = x_d.values                                     ####データ変更
 np_y = MEDV_d.values
 np_xy = np.stack([np_x, np_y])
 
@@ -65,7 +75,7 @@ y=np.array(np_y).reshape(-1,1)
 model_lr = LinearRegression()
 model_lr.fit(x, y)
 
-plt.plot(RM_d, MEDV_d, 'o')                             ####データ変更
+plt.plot(x_d, MEDV_d, 'o')                             ####データ変更
 plt.plot(x, model_lr.predict(x), linestyle="solid")
 plt.show()
 
@@ -73,8 +83,6 @@ print('モデル関数の回帰変数 w1: %.3f' %model_lr.coef_)
 print('モデル関数の切片 w2: %.3f' %model_lr.intercept_)
 print('y= %.3fx + %.3f' % (model_lr.coef_ , model_lr.intercept_))
 print('決定係数 R^2： ', model_lr.score(x, y))
-
-
 
 #分散、共分散
 s_xy = np.cov(np_xy, rowvar=1, bias=1)
