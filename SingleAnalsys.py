@@ -51,7 +51,7 @@ import matplotlib.pyplot as plt     #グラフ化
 import seaborn as sns
 
 plt.plot(x_d, MEDV_d, 'o')                           ####データ変更
-plt.show()
+#plt.show()
 
 import numpy as np    #numpyで分析
 np_x = x_d.values                                     ####データ変更
